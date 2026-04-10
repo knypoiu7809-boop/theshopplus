@@ -568,7 +568,7 @@ async function init() {
   }
 
   // GAS URL이 설정 안 된 경우 테스트 모드로 동작
-  if (GAS_URL === 'YOUR_GAS_WEB_APP_URL_HERE') {
+  if (GAS_URL === 'https://script.google.com/macros/s/AKfycbw6GVVtIBsyX9TAJ6sVL1i-_EX6M15HkocxGnkV_Gel9mmp1PcgoJ8oqnuEzX74CmVEkQ/exec') {
     renderWithFallbackData(userKey);
     return;
   }
@@ -762,7 +762,7 @@ async function handleMoreClick() {
   btn.innerHTML = '<span>⏳</span><span>기록 중...</span>';
 
   // GAS에 클릭 이벤트 기록
-  if (GAS_URL !== 'YOUR_GAS_WEB_APP_URL_HERE') {
+  if (GAS_URL !== 'https://script.google.com/macros/s/AKfycbw6GVVtIBsyX9TAJ6sVL1i-_EX6M15HkocxGnkV_Gel9mmp1PcgoJ8oqnuEzX74CmVEkQ/exec') {
     try {
       await callGAS({ action: 'logView', user: currentUser, event: '더 확인하기' });
     } catch(e) {}
@@ -782,7 +782,7 @@ async function handleMoreClick() {
 //  이력 불러오기 & 렌더
 // ============================================================
 async function loadHistory(userKey) {
-  if (GAS_URL === 'YOUR_GAS_WEB_APP_URL_HERE') return;
+  if (GAS_URL === 'https://script.google.com/macros/s/AKfycbw6GVVtIBsyX9TAJ6sVL1i-_EX6M15HkocxGnkV_Gel9mmp1PcgoJ8oqnuEzX74CmVEkQ/exec') return;
 
   try {
     const res = await callGAS({ action: 'getHistory', user: userKey });
