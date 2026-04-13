@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>더샵플러스 멤버십 현황</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#2563EB;--blue-dark:#1D4ED8;--blue-light:#EFF6FF;--blue-mid:#DBEAFE;
+  --green:#16A34A;--orange:#EA580C;
+  --gray-50:#F9FAFB;--gray-100:#F3F4F6;--gray-200:#E5E7EB;--gray-300:#D1D5DB;
+  --gray-400:#9CA3AF;--gray-500:#6B7280;--gray-600:#4B5563;--gray-700:#374151;
+  --gray-800:#1F2937;--gray-900:#111827;
+  --shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+  --radius:12px;--radius-xl:20px;
+}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--gray-50);color:var(--gray-900);font-size:14px}
+
+#loading{position:fixed;inset:0;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.spinner{width:36px;height:36px;border:4px solid var(--gray-200);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loading.done{display:none}
+#errPage{display:none;position:fixed;inset:0;background:#fff;z-index:9998;align-items:center;justify-content:center;flex-direction:column;gap:12px;text-align:center;padding:24px}
+#errPage.show{display:flex}
+
+/* NAV */
+.nav{background:#fff;border-bottom:1px solid var(--gray-200);position:sticky;top:0;z-index:100;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.nav-in{max-width:1280px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:17px;font-weight:700}
+.nav-links{display:flex;gap:24px;font-size:13px;color:var(--gray-500)}
+.nav-links span{cursor:pointer}
+.nav-links .on{color:var(--blue);font-weight:600}
+.nav-r{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gray-500)}
+.nbadge{padding:4px 12px;background:var(--blue-light);color:var(--blue);border-radius:20px;font-weight:700;font-size:13px}
+.phname{font-size:13px;color:var(--gray-600);font-weight:600}
+
+/* SERVICE INFO TOP */
+.svc-wrap{background:#fff;border-bottom:1px solid var(--gray-200)}
+.svc-in{max-width:1280px;margin:0 auto;padding:24px}
+.svc-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.svc-hd h2{font-size:18px;font-weight:600}
+.svc-hd-sub{font-size:13px;color:var(--gray-500);margin-top:2px}
+.btn-ghost{padding:8px 14px;background:#fff;border:1px solid var(--gray-300);border-radius:8px;font-size:13px;color:var(--gray-600);cursor:pointer;font-family:inherit}
+.svc-grid{display:grid;grid-template-columns:1fr 3fr;gap:16px}
+.card-blue{background:linear-gradient(135deg,#2563EB,#1D4ED8);border-radius:var(--radius-xl);padding:32px;color:#fff;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+.card-blue .lbl{font-size:13px;opacity:.8;margin-bottom:4px}
+.card-blue h3{font-size:26px;font-weight:800;margin-bottom:6px}
+.card-blue .supplier{font-size:12px;opacity:.75;margin-bottom:16px}
+.btn-g{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.circ{position:absolute;right:-16px;top:50%;transform:translateY(-50%);opacity:.12;pointer-events:none}
+.card-right{background:#fff;border-radius:var(--radius-xl);padding:24px;border:1px solid var(--gray-200);box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
+.ubanner{background:linear-gradient(to right,#EFF6FF,#F5F3FF);border-radius:12px;padding:14px 16px;border:1px solid #BFDBFE;display:flex;align-items:center;justify-content:space-between}
+.dnum{font-size:17px;font-weight:700;color:var(--blue)}
+.btn-b{padding:8px 14px;background:var(--blue);color:#fff;border-radius:8px;font-size:13px;font-weight:600;border:none;font-family:inherit;cursor:pointer;white-space:nowrap}
+.rem3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.rc{background:var(--gray-50);border-radius:12px;padding:14px;border:1px solid var(--gray-200)}
+.rc-lbl{font-size:12px;color:var(--gray-500);margin-bottom:6px;font-weight:500}
+.rc-n{font-size:26px;font-weight:800;color:var(--blue)}
+.rc-n small{font-size:13px;font-weight:400;color:var(--gray-400);margin-left:2px}
+.rc-s{font-size:11px;color:var(--gray-400);margin-top:4px}
+/* 미배송 강조 태그 */
+.undelivered-tag{display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:3px 8px;background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;border-radius:6px;font-size:11px;font-weight:700}
+.acc{background:var(--gray-50);border-radius:12px;padding:14px 16px;border:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between}
+.acc-lbl{font-size:12px;color:var(--gray-500);margin-bottom:4px}
+.acc-v{font-size:15px;font-weight:700}
+.acc-d{font-size:11px;color:var(--gray-400);margin-top:2px}
+.btn-ob{padding:8px 12px;border:1px solid var(--blue);color:var(--blue);background:#fff;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
+.sub{border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:8px;border:1px solid}
+.sub-lbl{font-size:14px;font-weight:600}
+.sub-bdg{font-size:12px;font-weight:600}
+
+/* MAIN */
+.main{max-width:1280px;margin:0 auto;padding:24px;display:flex;flex-direction:column;gap:28px}
+.stitle{font-size:20px;font-weight:700;margin-bottom:4px}
+.ssub{font-size:13px;color:var(--gray-500)}
+.wcard{background:#fff;border-radius:var(--radius-xl);border:1px solid var(--gray-200);box-shadow:var(--shadow);padding:24px}
+
+/* SAVINGS */
+.sc{display:flex;flex-direction:column;align-items:center}
+.samt{font-size:48px;font-weight:900;color:var(--green);text-align:center;margin-bottom:8px;letter-spacing:-1px}
+.ibox{background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:10px;padding:12px 20px;text-align:center;display:inline-block;margin:0 auto 12px;font-size:12px;color:#1D4ED8;line-height:1.6}
+
+/* KPI 3개 */
+.kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
+.kcard{border-radius:16px;border:2px solid;padding:20px}
+.ku{border-color:#FECACA;background:linear-gradient(135deg,#FFF5F5,#FFE4E6)}
+.kw{border-color:#DDD6FE;background:linear-gradient(135deg,#F5F3FF,#EDE9FE)}
+.kg{border-color:#BAE6FD;background:linear-gradient(135deg,#F0F9FF,#E0F2FE)}
+.khd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.kico{font-size:28px}
+.ktag{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.ktu{background:#FFE4E6;color:#9F1239}
+.ktw{background:#EDE9FE;color:#4C1D95}
+.ktg{background:#E0F2FE;color:#0C4A6E}
+.knm{font-size:15px;font-weight:700;margin-bottom:3px}
+.kds{font-size:11px;color:var(--gray-400);margin-bottom:12px}
+.krw{display:flex;align-items:baseline;justify-content:space-between}
+.kcnt{font-size:28px;font-weight:900;color:var(--gray-800)}
+.kcnt small{font-size:12px;font-weight:400;color:var(--gray-400);margin-left:3px}
+.ksav{font-size:24px;font-weight:800;color:var(--blue)}
+.ksav small{font-size:12px;font-weight:400;color:var(--gray-400);margin-left:3px}
+.kdiv{height:1px;background:rgba(0,0,0,.07);margin:10px 0}
+.kfml{font-size:11px;color:var(--gray-500);text-align:right}
+
+/* BENEFIT CARDS */
+.bwrap{position:relative}
+.bgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bc{padding:16px;border-radius:12px;border:2px solid var(--gray-200);background:#fff}
+.bc.blur{filter:blur(8px);pointer-events:none;user-select:none}
+.bctop{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.bcico{width:24px;height:24px;background:var(--gray-100);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.bcnm{font-weight:600;font-size:14px}
+.bctag{padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;background:var(--gray-100);color:var(--gray-600);margin-left:auto}
+.bcds{font-size:12px;color:var(--gray-400);margin-bottom:12px}
+.bcnums{display:flex;align-items:baseline;justify-content:space-between}
+.bcc{font-size:24px;font-weight:800}
+.bcc small{font-size:12px;font-weight:400;color:var(--gray-400);margin-left:2px}
+.bcs{font-size:22px;font-weight:700;color:var(--blue)}
+.bcs small{font-size:12px;font-weight:400;color:var(--gray-400);margin-left:2px}
+
+/* MORE BUTTON */
+.more-ov{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);z-index:20}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.more-btn{background:#D97706;color:#fff;border:none;border-radius:18px;padding:20px 52px;font-size:22px;font-weight:900;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:12px;white-space:nowrap;box-shadow:0 12px 40px rgba(217,119,6,.65);animation:fl 3s ease-in-out infinite;transition:background .15s}
+.more-btn:hover{background:#B45309}
+
+/* COMPARE */
+.cmpc{background:#fff;border-radius:var(--radius-xl);border:1px solid var(--gray-200);padding:24px}
+.cmpi{background:var(--gray-50);border-radius:12px;padding:24px;filter:blur(6px);user-select:none}
+.cmpr{margin-bottom:16px}
+.cmplr{display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px;font-weight:500}
+.cmpbar{height:32px;background:var(--gray-200);border-radius:8px;overflow:hidden}
+.cmpfill{height:100%;border-radius:8px;transition:width .6s}
+
+/* CAL */
+.calc{background:#fff;border-radius:var(--radius-xl);border:1px solid var(--gray-200);padding:24px;filter:blur(6px);user-select:none;pointer-events:none}
+.calh{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.gbn{background:#FFFBEB;border:2px solid #FDE68A;border-radius:10px;padding:12px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.wgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:12px}
+.wdcol{display:flex;flex-direction:column}
+.wdlbl{text-align:center;font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:8px}
+.wdnum{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;margin:0 auto 8px}
+.wdnum.today{background:var(--blue);color:#fff}
+.gtag{font-size:10px;padding:4px 6px;border-radius:6px;text-align:center;font-weight:700;margin-bottom:8px}
+.gtag.pk{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A}
+.gtag.dl{background:#D1FAE5;color:#065F46;border:1px solid #A7F3D0}
+.wev{background:var(--gray-50);border-radius:12px;padding:10px;min-height:100px;border:2px solid var(--gray-200)}
+.noev{font-size:11px;color:var(--gray-300);text-align:center;padding-top:28px}
+
+/* FOOTER */
+.ft{background:var(--gray-100);border-radius:12px;padding:16px;border:1px solid var(--gray-200);display:flex;justify-content:space-between;font-size:12px;color:var(--gray-400)}
+
+/* MODAL */
+.mover{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.mbox{background:#fff;border-radius:20px;padding:32px;max-width:420px;width:90%;box-shadow:0 25px 50px rgba(0,0,0,.25);position:relative;max-height:90vh;overflow-y:auto}
+.mtitle{font-size:22px;font-weight:800;text-align:center;margin-bottom:8px}
+.mbtn{width:100%;padding:14px;border-radius:14px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;border:none;margin-bottom:10px}
+.mbtn.p{background:var(--blue);color:#fff}
+.mclose{position:absolute;top:14px;right:14px;background:var(--gray-100);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
+
+/* GAS 뱃지 */
+.gas-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.gas-ok{background:#D1FAE5;color:#065F46}
+.gas-fail{background:#F3F4F6;color:#6B7280}
+</style>
+</head>
+<body>
+
+<div id="loading"><div class="spinner"></div><p style="font-size:14px;color:var(--gray-500)">로딩 중...</p></div>
+<div id="errPage">
+  <div style="font-size:56px">⚠️</div>
+  <h2 style="font-size:22px;font-weight:800">회원 정보를 찾을 수 없습니다</h2>
+  <p style="font-size:14px;color:var(--gray-500);max-width:300px;line-height:1.7;text-align:center" id="errTxt">올바른 링크로 다시 접속해 주세요.</p>
+</div>
+
+<nav class="nav">
+  <div class="nav-in">
+    <div style="display:flex;align-items:center;gap:32px">
+      <div class="logo">더샵플러스</div>
+      <div class="nav-links"><span>대시보드</span><span>서비스 관리</span><span class="on">멤버십 현황</span><span>이용 내역</span><span>설정</span></div>
+    </div>
+    <div class="nav-r">
+      <span class="phname" id="phName"></span>
+      <span class="nbadge" id="navBadge">-</span>
+      <span id="gasBadge"></span>
+      <span style="color:var(--gray-300);margin:0 4px">|</span>
+      <span style="cursor:pointer">로그아웃</span>
+    </div>
+  </div>
+</nav>
+
+<div class="svc-wrap">
+  <div class="svc-in">
+    <div class="svc-hd">
+      <div>
+        <h2>더샵 플러스 이용 현황</h2>
+        <div class="svc-hd-sub" id="supplierLabel"></div>
+      </div>
+      <button class="btn-ghost">서비스 철회 신청</button>
+    </div>
+    <div class="svc-grid">
+      <div class="card-blue">
+        <div class="lbl">더샵만의 플러스 혜택</div>
+        <h3>더샵 플러스</h3>
+        <div class="supplier" id="cardSupplier"></div>
+        <button class="btn-g">서비스 정보 수정</button>
+        <div class="circ"><svg width="200" height="200"><circle cx="100" cy="100" r="90" fill="white"/><circle cx="160" cy="160" r="60" fill="white"/><circle cx="60" cy="60" r="40" fill="white"/></svg></div>
+      </div>
+      <div class="card-right">
+        <div class="ubanner">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-size:24px">🎉</span>
+            <div><span style="font-size:13px;color:var(--gray-700)">더샵 플러스 이용 </span><span class="dnum">128일째</span><span style="font-size:13px;color:var(--gray-700)"> 이용 중!</span></div>
+          </div>
+          <button class="btn-b">혜택 유지중</button>
+        </div>
+        <!-- 잔여 3개 카드: 긴급배송 / 약사가운(+미배송) / 매출 -->
+        <div class="rem3">
+          <div class="rc">
+            <div class="rc-lbl">긴급배송 당월 잔여횟수</div>
+            <div class="rc-n" id="rUrgent">-<small>회 남음</small></div>
+            <div class="rc-s" id="rUrgentS">-</div>
+          </div>
+          <div class="rc">
+            <div class="rc-lbl">약사가운 당월 잔여횟수</div>
+            <div class="rc-n" id="rGown">-<small>회 남음</small></div>
+            <div class="rc-s" id="rGownS">-</div>
+            <div id="undeliveredTag"></div>
+          </div>
+          <div class="rc">
+            <div class="rc-lbl">더샵플러스 매출액</div>
+            <div class="rc-n" style="font-size:18px" id="rSales">-</div>
+            <div class="rc-s">이번 달 기준</div>
+          </div>
+        </div>
+        <div class="acc">
+          <div>
+            <div class="acc-lbl">출입방법</div>
+            <div class="acc-v">비밀번호 출입</div>
+            <div class="acc-d">업데이트 2025.03.15</div>
+          </div>
+          <button class="btn-ob">변경하러가기 〉</button>
+        </div>
+        <div class="sub" id="subCard">
+          <span id="subDot" style="font-size:18px">●</span>
+          <span class="sub-lbl">항균케어 구독 서비스</span>
+          <span class="sub-bdg" id="subBdg"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div>
+    <h2 class="stitle">더샵플러스 혜택 금액</h2>
+    <p class="ssub">더샵플러스 멤버십을 통해 이번 달 제공받은 혜택의 총합입니다</p>
+    <p style="font-size:12px;color:var(--gray-400);margin-top:2px">이번 달 이용 내역을 기준으로 제공된 혜택이며, 더샵플러스를 이용할수록 매월 누적됩니다</p>
+  </div>
+
+  <!-- 총 절약 -->
+  <section>
+    <div class="wcard"><div class="sc">
+      <div class="samt" id="totAmt">-</div>
+      <div class="ibox">💡 업계 표준 요금 또는 유사 유료 서비스 기준으로<br>더샵플러스가 대신 제공한 혜택을 금액으로 환산한 값입니다</div>
+      <p style="font-size:12px;color:var(--gray-400);text-align:center;line-height:1.6">해당 서비스들을 별도로 유료 이용했다면<br>약국에서 직접 부담했을 것으로 예상되는 비용을 기준으로 합니다</p>
+      <p style="font-size:11px;color:var(--gray-300);margin-top:8px;text-align:center">* 표시된 혜택 금액은 참고 추정치이며, 실제 청구·정산 금액과는 무관합니다.</p>
+    </div></div>
+  </section>
+
+  <!-- 혜택 현황 KPI + 카드 -->
+  <section>
+    <div style="margin-bottom:12px"><h2 class="stitle">혜택 현황</h2><p class="ssub">이번 달 주요 혜택 서비스 현황입니다</p></div>
+
+
+    <div class="wcard">
+      <p style="font-size:12px;color:var(--gray-400);text-align:center;margin-bottom:16px">각 금액은 이번 혜택을 구성하는 서비스별 기여도를 보여줍니다</p>
+      <div class="bwrap">
+        <div class="bgrid" id="bGrid"></div>
+        <div class="more-ov">
+          <button class="more-btn" id="moreBtn" onclick="onMore()"><span>📊</span><span>더 확인하기</span></button>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--gray-400);text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--gray-100)">본 혜택은 일반 시장에서 통상적으로 제공되는 유료 서비스 수준을 기준으로 산정되었습니다</p>
+    </div>
+  </section>
+
+  <!-- 비교 -->
+  <section>
+    <div class="cmpc">
+      <h3 style="font-size:15px;font-weight:700;margin-bottom:4px">다른 약국들의 더샵플러스 이용 현황</h3>
+      <p style="font-size:12px;color:var(--gray-400);margin-bottom:16px">전체 약국 평균 대비 이 약국의 혜택 비교</p>
+      <div class="cmpi" id="cmpIn"></div>
+    </div>
+  </section>
+
+  <!-- 캘린더 -->
+  <section>
+    <div style="margin-bottom:12px"><h2 class="stitle">서비스 신청 이력</h2><p class="ssub">이번 달 서비스 이용 내역을 한눈에 확인하세요</p></div>
+    <div class="calc">
+      <div class="calh">
+        <div style="display:flex;gap:6px">
+          <button style="padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;border:none;background:var(--blue);color:#fff">주간</button>
+          <button style="padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;border:none;background:var(--gray-100);color:var(--gray-600)">월간</button>
+        </div>
+        <div style="font-size:13px;color:var(--gray-400)">이번 주 이용 내역</div>
+      </div>
+      <div id="calBody"></div>
+    </div>
+  </section>
+
+  <div class="ft">
+    <p>본 화면에는 로그인한 회원 본인에게 제공된 혜택 정보만 표시됩니다.</p>
+    <p>회원 전용 정보이므로 외부 공유 시 유의해 주세요.</p>
+  </div>
+</div>
+
+<!-- 더 확인하기 모달 -->
+<div class="mover" id="mModal" style="display:none">
+  <div class="mbox">
+    <button class="mclose" onclick="cm('mModal')">✕</button>
+    <div class="mtitle">📊 이번 달 혜택 내역</div>
+    <div style="background:linear-gradient(135deg,var(--green),#15803D);color:#fff;border-radius:14px;padding:20px;text-align:center;margin-bottom:20px">
+      <div style="font-size:13px;opacity:.85;margin-bottom:6px">이번 달 누적 절약 혜택</div>
+      <div style="font-size:36px;font-weight:900" id="mTot">-</div>
+    </div>
+    <div style="font-size:13px;color:var(--gray-600);line-height:2;background:var(--gray-50);border-radius:10px;padding:14px;margin-bottom:20px" id="mDetail"></div>
+    <button class="mbtn p" onclick="cm('mModal')">확인</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  Google Apps Script URL
+// ============================================================
+var GAS = 'https://script.google.com/macros/s/AKfycbw6GVVtIBsyX9TAJ6sVL1i-_EX6M15HkocxGnkV_Gel9mmp1PcgoJ8oqnuEzX74CmVEkQ/exec';
+
+// ============================================================
+//  단가
+// ============================================================
+var P = {urgent:10000, waste:2000, pack:2000, gown:8500, anti:27900};
+
+// ============================================================
+//  회원 DB
+//  필드: sales, name(약국명), supplier(공급사),
+//        washable(세탁가능횟수), pickup(수거벌수),
+//        gownDone(가운세탁 받은 횟수), undelivered(미배송),
+//        gownRem(가운세탁 당월 잔여), waste(폐의약품),
+//        pack(포장재 회수), urgentUsed(긴급배송 사용),
+//        urgentRem(긴급배송 당월 잔여), anti(항균케어)
+// ============================================================
+var DB = {
+  '1000000040':{sales:6014288,  name:'복지약국',          supplier:'더샵플러스(백제약품)',  washable:4,pickup:3,gownDone:4,undelivered:1,gownRem:0,waste:1, pack:3, urgentUsed:1,urgentRem:4,anti:false},
+  '1000004205':{sales:8670328,  name:'다솜약국',          supplier:'더샵플러스(복산나이스)', washable:4,pickup:3,gownDone:3,undelivered:2,gownRem:1,waste:2, pack:0, urgentUsed:1,urgentRem:4,anti:false},
+  '1000017957':{sales:15235902, name:'청구약국',          supplier:'더샵플러스(복산나이스)', washable:4,pickup:3,gownDone:4,undelivered:1,gownRem:0,waste:4, pack:0, urgentUsed:4,urgentRem:1,anti:false},
+  '1000062226':{sales:13878750, name:'참온누리약국',      supplier:'더샵플러스(백제약품)',  washable:6,pickup:4,gownDone:6,undelivered:2,gownRem:0,waste:4, pack:19,urgentUsed:0,urgentRem:5,anti:false},
+  '1000071266':{sales:5848760,  name:'현대온누리약국',    supplier:'더샵플러스(백제약품)',  washable:6,pickup:2,gownDone:4,undelivered:2,gownRem:2,waste:2, pack:1, urgentUsed:2,urgentRem:3,anti:false},
+  '1000079829':{sales:6723510,  name:'건강과행복이열리는약국', supplier:'더샵플러스(백제약품)', washable:3,pickup:1,gownDone:2,undelivered:1,gownRem:1,waste:4, pack:6, urgentUsed:2,urgentRem:3,anti:false},
+  '1000123010':{sales:11173789, name:'신명약국',          supplier:'더샵플러스(백제약품)',  washable:2,pickup:2,gownDone:2,undelivered:0,gownRem:0,waste:4, pack:24,urgentUsed:3,urgentRem:2,anti:true},
+  '1000119926':{sales:5266265,  name:'기쁨이넘치는약국', supplier:'더샵플러스(백제약품)',  washable:2,pickup:1,gownDone:1,undelivered:0,gownRem:1,waste:3, pack:17,urgentUsed:4,urgentRem:1,anti:false},
+  '1000311955':{sales:11734672, name:'용산오늘약국',      supplier:'더샵플러스(백제약품)',  washable:5,pickup:3,gownDone:5,undelivered:1,gownRem:0,waste:2, pack:3, urgentUsed:0,urgentRem:5,anti:false},
+  '1000120306':{sales:5706268,  name:'한국구일온누리약국',supplier:'더샵플러스(백제약품)',  washable:2,pickup:2,gownDone:2,undelivered:0,gownRem:0,waste:4, pack:0, urgentUsed:4,urgentRem:1,anti:true},
+  '1000018803':{sales:5458608,  name:'세계로약국',        supplier:'더샵플러스(백제약품)',  washable:4,pickup:2,gownDone:4,undelivered:2,gownRem:0,waste:2, pack:3, urgentUsed:0,urgentRem:5,anti:false},
+  '1000071073':{sales:6508155,  name:'기린약국',          supplier:'더샵플러스(백제약품)',  washable:4,pickup:3,gownDone:4,undelivered:0,gownRem:0,waste:9, pack:0, urgentUsed:1,urgentRem:4,anti:false},
+  '1000266501':{sales:6720178,  name:'힘찬약국',          supplier:'더샵플러스(백제약품)',  washable:4,pickup:4,gownDone:4,undelivered:0,gownRem:0,waste:6, pack:0, urgentUsed:1,urgentRem:4,anti:true}
+};
+
+var WD=['월','화','수','목','금','토','일'];
+var TODAY=new Date(2026,1,12);
+var CUR_KEY=null;
+
+function getUserKey(){
+  var p=new URLSearchParams(location.search);
+  if(p.get('user')) return p.get('user');
+  var h=location.hash.replace('#','');
+  return h||null;
+}
+
+function calc(u){
+  var us=u.urgentUsed*P.urgent, ws=u.waste*P.waste, ps=u.pack*P.pack, gs=u.gownDone*P.gown, as=u.anti?P.anti:0;
+  return{us:us,ws:ws,ps:ps,gs:gs,as:as,tot:us+ws+ps+gs+as};
+}
+
+var allKeys=Object.keys(DB);
+var avgSav=Math.round(allKeys.reduce(function(s,k){return s+calc(DB[k]).tot;},0)/allKeys.length);
+
+// GAS 호출
+function gasCall(params,cb){
+  var url=GAS+'?'+Object.keys(params).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(params[k]);}).join('&');
+  fetch(url).then(function(r){return r.json();}).then(function(d){if(cb)cb(null,d);}).catch(function(e){if(cb)cb(e,null);});
+}
+
+function onMore(){
+  gasCall({action:'logView',user:CUR_KEY,event:'더 확인하기'},function(){});
+  document.getElementById('mModal').style.display='flex';
+}
+
+function setBadge(ok){
+  var el=document.getElementById('gasBadge');
+  el.className='gas-badge '+(ok?'gas-ok':'gas-fail');
+  el.textContent=ok?'● 시트 연동됨':'● 오프라인';
+}
+
+function pad(n){return String(n).padStart(2,'0');}
+function sh(id,html){document.getElementById(id).innerHTML=html;}
+function cm(id){document.getElementById(id).style.display='none';}
+
+// ============================================================
+//  렌더
+// ============================================================
+function render(key,u){
+  var b=calc(u);
+  document.getElementById('navBadge').textContent='USER '+key;
+  document.getElementById('phName').textContent=u.name+' ·';
+  document.getElementById('supplierLabel').textContent=u.supplier;
+  document.getElementById('cardSupplier').textContent=u.supplier;
+  document.title='더샵플러스 멤버십 현황 · '+u.name;
+
+  // 긴급배송 잔여
+  sh('rUrgent', u.urgentRem+'<small>회 남음</small>');
+  document.getElementById('rUrgentS').textContent='월 제공 · '+u.urgentUsed+'회 사용';
+
+  // 가운 잔여 + 미배송
+  sh('rGown', u.gownRem+'<small>회 남음</small>');
+  document.getElementById('rGownS').textContent='세탁 가능 '+u.washable+'회 · 수거 '+u.pickup+'회';
+  var udTag=document.getElementById('undeliveredTag');
+  if(u.undelivered>0){
+    udTag.innerHTML='<span class="undelivered-tag">📦 미배송 '+u.undelivered+'회</span>';
+  } else {
+    udTag.innerHTML='';
+  }
+
+  // 매출
+  document.getElementById('rSales').innerHTML=u.sales.toLocaleString()+'<small style="font-size:12px;color:var(--gray-400);margin-left:2px">원</small>';
+
+  // 항균케어
+  var sc=document.getElementById('subCard');
+  document.getElementById('subDot').style.color=u.anti?'var(--green)':'var(--gray-300)';
+  document.getElementById('subBdg').textContent=u.anti?'(구독 중)':'(미구독)';
+  sc.style.background=u.anti?'linear-gradient(to right,#F0FDF4,#ECFDF5)':'#F9FAFB';
+  sc.style.borderColor=u.anti?'#BBF7D0':'#E5E7EB';
+
+  // 총 절약
+  document.getElementById('totAmt').textContent=b.tot.toLocaleString()+'원';
+
+
+
+  // 혜택 카드
+  var svcs=[
+    {n:'긴급배송',      c:u.urgentUsed, s:b.us, p:P.urgent, i:'🚀',d:'당일 3시간 이내 배송',    cat:'구매 관리'},
+    {n:'폐의약품 처리', c:u.waste,      s:b.ws, p:P.waste,  i:'💊',d:'폐의약품 안전 처리',      cat:'운영지원 서비스'},
+    {n:'가운세탁',      c:u.gownDone,   s:b.gs, p:P.gown,   i:'👔',d:'약국 가운 전문 세탁',     cat:'운영지원 서비스'},
+    {n:'포장재 회수',   c:u.pack,       s:b.ps, p:P.pack,   i:'📦',d:'의료 포장재 회수 및 처리', cat:'운영지원 서비스'},
+    {n:'새벽배송',      c:0,            s:0,    p:3000,     i:'🌙',d:'새벽 5시 전 배송',        cat:'구매 관리'},
+    {n:'항균케어',      c:u.anti?1:0,   s:b.as, p:P.anti,   i:'🦠',d:u.anti?'구독 중 (월 27,900원)':'미구독', cat:'마일리지 ON'}
+  ];
+  document.getElementById('bGrid').innerHTML=svcs.map(function(s,i){
+    return '<div class="bc'+(i>=3?' blur':'')+'"><div class="bctop"><div class="bcico">'+s.i+'</div><span class="bcnm">'+s.n+'</span><span class="bctag">'+s.cat+'</span></div><div class="bcds">'+s.d+'</div><div class="bcnums"><div class="bcc">'+s.c+'<small>회 이용</small></div><div class="bcs">'+s.s.toLocaleString()+'원<small>절약</small></div></div></div>';
+  }).join('');
+
+  // 모달 상세
+  var fp=[];
+  if(u.urgentUsed) fp.push('🚀 긴급배송 '+u.urgentUsed+'회 → '+b.us.toLocaleString()+'원');
+  if(u.waste)      fp.push('💊 폐의약품 '+u.waste+'회 → '+b.ws.toLocaleString()+'원');
+  if(u.gownDone)   fp.push('👔 가운세탁 '+u.gownDone+'회 → '+b.gs.toLocaleString()+'원');
+  if(u.pack)       fp.push('📦 포장재 회수 '+u.pack+'회 → '+b.ps.toLocaleString()+'원');
+  if(u.anti)       fp.push('🦠 항균케어 → 27,900원');
+  document.getElementById('mTot').textContent=b.tot.toLocaleString()+'원';
+  document.getElementById('mDetail').innerHTML=fp.map(function(f){return '• '+f;}).join('<br>');
+
+  // 비교
+  var pct=Math.round(((b.tot-avgSav)/avgSav)*100);
+  var aw=Math.min(100,Math.round((avgSav/Math.max(b.tot,1))*100));
+  document.getElementById('cmpIn').innerHTML=
+    '<div class="cmpr"><div class="cmplr"><span>[전체 약국 평균]</span><span>'+avgSav.toLocaleString()+'원</span></div><div class="cmpbar"><div class="cmpfill" style="width:'+aw+'%;background:#93C5FD"></div></div></div>'+
+    '<div class="cmpr"><div class="cmplr"><span>[우리 약국 ('+u.name+')]</span><span style="color:var(--blue)">'+b.tot.toLocaleString()+'원</span></div><div class="cmpbar"><div class="cmpfill" style="width:100%;background:var(--blue)"></div></div></div>'+
+    '<div style="text-align:center;padding-top:8px;font-size:14px;color:'+(pct>=0?'var(--green)':'#DC2626')+';font-weight:600">'+(pct>=0?'▲':'▼')+' 평균 대비 '+(pct>=0?'+':'')+pct+'% '+(pct>=0?'더 많은 혜택!':'적은 혜택')+'</div>';
+
+  renderCal();
+}
+
+function renderCal(){
+  var dates=[],dow=TODAY.getDay(),mon=new Date(TODAY);
+  mon.setDate(TODAY.getDate()-(dow===0?6:dow-1));
+  for(var i=0;i<7;i++){var d=new Date(mon);d.setDate(mon.getDate()+i);dates.push(d);}
+  var fd=new Date(TODAY.getFullYear(),TODAY.getMonth(),1);
+  var wn=Math.ceil((TODAY.getDate()+fd.getDay())/7);
+  var bnr='';
+  if(wn===1||wn===3) bnr='<div class="gbn"><span style="font-size:20px">📦</span><div><div style="font-size:13px;font-weight:700;color:#92400E">가운 수거 주간</div><div style="font-size:11px;color:#B45309">월~목요일 새벽배송 시 가운 수거</div></div></div>';
+  else if(wn===2||wn===4) bnr='<div class="gbn" style="background:#F0FDF4;border-color:#A7F3D0"><span style="font-size:20px">🚚</span><div><div style="font-size:13px;font-weight:700;color:#065F46">가운 배송 주간</div><div style="font-size:11px;color:#16A34A">화~금요일 세탁 완료 가운 배송</div></div></div>';
+  var cols='';
+  dates.forEach(function(date,i){
+    var isT=(fmtD(date)===fmtD(TODAY));
+    var dow2=date.getDay(),dom=date.getDate();
+    var fd2=new Date(date.getFullYear(),date.getMonth(),1);
+    var wn2=Math.ceil((dom+fd2.getDay())/7);
+    var gt=null;
+    if((wn2===1||wn2===3)&&dow2>=1&&dow2<=4) gt='pk';
+    else if((wn2===2||wn2===4)&&dow2>=2&&dow2<=5) gt='dl';
+    var gTag=gt?'<div class="gtag '+gt+'">'+(gt==='pk'?'📦 수거':'🚚 배송')+'</div>':'';
+    cols+='<div class="wdcol"><div class="wdlbl">'+WD[i]+'</div><div class="wdnum'+(isT?' today':'')+'">'+date.getDate()+'</div>'+gTag+'<div class="wev"><div class="noev">이용 내역 없음</div></div></div>';
+  });
+  document.getElementById('calBody').innerHTML=bnr+'<div class="wgrid">'+cols+'</div>';
+}
+
+function fmtD(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+document.addEventListener('click',function(e){if(e.target===document.getElementById('mModal'))cm('mModal');});
+
+(function(){
+  var key=getUserKey();
+  if(!key||!DB[key]){
+    document.getElementById('loading').classList.add('done');
+    document.getElementById('errPage').classList.add('show');
+    if(key) document.getElementById('errTxt').textContent='USER '+key+' 를 찾을 수 없습니다.';
+    return;
+  }
+  CUR_KEY=key;
+  render(key,DB[key]);
+  document.getElementById('loading').classList.add('done');
+  gasCall({action:'logView',user:key,event:'페이지 조회'},function(err,data){
+    setBadge(!err&&data&&data.success);
+  });
+})();
+</script>
+</body>
+</html>
